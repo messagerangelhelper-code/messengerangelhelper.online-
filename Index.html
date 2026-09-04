@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Messenger Angel Helper</title>
+    <style>
+        /* ── Reset & Base ── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f9ff;
+            color: #0a1a3a;
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ── Header / Logo (Top Left) ── */
+        header {
+            padding: 20px 0;
+            border-bottom: 2px solid #dbeafe;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a3c7a;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo span {
+            background: #1a3c7a;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+
+        /* ── Hero / Video Section ── */
+        .hero {
+            background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+            border-radius: 24px;
+            padding: 40px 30px;
+            margin: 30px 0;
+            text-align: center;
+            border: 1px solid #dbeafe;
+        }
+        .hero h1 {
+            font-size: 32px;
+            color: #0a1a3a;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: 18px;
+            color: #2d4a7a;
+            margin-bottom: 20px;
+        }
+        .video-wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(26, 60, 122, 0.15);
+            background: #000;
+        }
+        .video-wrapper iframe {
+            width: 100%;
+            height: 400px;
+            border: none;
+            display: block;
+        }
+
+        /* ── Store Intro ── */
+        .intro {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px 30px;
+            margin: 30px 0;
+            border: 1px solid #dbeafe;
+            text-align: center;
+        }
+        .intro h2 {
+            font-size: 28px;
+            color: #1a3c7a;
+            margin-bottom: 10px;
+        }
+        .intro p {
+            font-size: 18px;
+            color: #2d4a7a;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .intro .cross {
+            color: #b8860b;
+            font-size: 24px;
+        }
+
+        /* ── Product Grid ── */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .product-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #dbeafe;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(26, 60, 122, 0.10);
+        }
+        .product-card img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: #f0f4fe;
+            margin-bottom: 15px;
+        }
+        .product-card h3 {
+            font-size: 20px;
+            color: #0a1a3a;
+            margin-bottom: 6px;
+        }
+        .product-card .price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a3c7a;
+            margin: 8px 0;
+        }
+        .product-card .desc {
+            font-size: 14px;
+            color: #4a5f7a;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        /* ── Buy Button with Upsell Trigger ── */
+        .btn-buy {
+            background: #1a3c7a;
+            color: #fff;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+        .btn-buy:hover {
+            background: #0f2a5a;
+        }
+        .btn-buy:active {
+            transform: scale(0.96);
+        }
+
+        /* ── Upsell Popup (hidden by default) ── */
+        .upsell-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.50);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .upsell-overlay.active {
+            display: flex;
+        }
+        .upsell-box {
+            background: #ffffff;
+            border-radius: 28px;
+            max-width: 420px;
+            width: 90%;
+            padding: 35px 30px 30px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.30);
+            border: 1px solid #dbeafe;
+            animation: popIn 0.3s ease;
+        }
+        @keyframes popIn {
+            0% {
+                transform: scale(0.85);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .upsell-box h2 {
+            color: #1a3c7a;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .upsell-box p {
+            color: #2d4a7a;
+            margin-bottom: 18px;
+            font-size: 16px;
+        }
+        .upsell-box .upsell-product {
+            background: #f5f9ff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #dbeafe;
+        }
+        .upsell-box .upsell-product h4 {
+            font-size: 18px;
+            color: #0a1a3a;
+        }
+        .upsell-box .upsell-product .price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a3c7a;
+        }
+        .upsell-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .upsell-actions button {
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+        .btn-upsell-yes {
+            background: #1a3c7a;
+            color: #fff;
+        }
+        .btn-upsell-yes:hover {
+            background: #0f2a5a;
+        }
+        .btn-upsell-no {
+            background: #e8f0fe;
+            color: #1a3c7a;
+        }
+        .btn-upsell-no:hover {
+            background: #dbeafe;
+        }
+
+        /* ── Checkout Section (White & Blue Flow) ── */
+        .checkout {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 35px 30px;
+            margin: 40px 0 50px;
+            border: 1px solid #dbeafe;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .checkout h2 {
+            font-size: 26px;
+            color: #1a3c7a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .checkout form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .checkout label {
+            font-weight: 600;
+            color: #0a1a3a;
+            display: block;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+        .checkout input,
+        .checkout select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dbeafe;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-top: 4px;
+            background: #fafcff;
+            transition: border 0.2s;
+            color: #0a1a3a;
+        }
+        .checkout input:focus,
+        .checkout select:focus {
+            border-color: #1a3c7a;
+            outline: none;
+            background: #ffffff;
+        }
+        .checkout .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .btn-checkout {
+            background: #1a3c7a;
+            color: #fff;
+            border: none;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 25px;
+            transition: background 0.2s;
+        }
+        .btn-checkout:hover {
+            background: #0f2a5a;
+        }
+        .checkout .secure {
+            text-align: center;
+            margin-top: 14px;
+            color: #4a6a8a;
+            font-size: 14px;
+        }
+        .checkout .secure span {
+            font-size: 18px;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 30px 0 20px;
+            border-top: 1px solid #dbeafe;
+            color: #4a6a8a;
+            font-size: 14px;
+        }
+        footer a {
+            color: #1a3c7a;
+            text-decoration: none;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 24px;
+            }
+            .video-wrapper iframe {
+                height: 220px;
+            }
+            .products {
+                grid-template-columns: 1fr;
+            }
+            .checkout .row {
+                grid-template-columns: 1fr;
+            }
+            .upsell-actions {
+                flex-direction: column;
+            }
+            .upsell-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ═══ HEADER / LOGO (Top Left) ═══ -->
+        <header>
+            <div class="logo">
+                <!-- Replace 'logo.png' with your actual logo filename -->
+                <img src="logo.png" alt="Messenger Angel Helper Logo" onerror="this.style.display='none'" />
+                Messenger Angel Helper <span>Faith</span>
+            </div>
+        </header>
+
+        <!-- ═══ HERO / VIDEO SECTION ═══ -->
+        <section class="hero">
+            <h1>🙏 Welcome to Messenger Angel Helper</h1>
+            <p>Discover faith‑filled products that inspire and uplift your spirit.</p>
+            <div class="video-wrapper">
+                <!-- Replace the src with your WhatsApp video link or YouTube embed -->
+                <iframe
+                src="https://www.youtube.com/embed/VIDEO_ID?autoplay=0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+    </section>
+
+    <!-- ═══ STORE INTRODUCTION ═══ -->
+    <section class="intro">
+        <h2>✝️ A Store Built on Faith</h2>
+        <p>
+            Every product in our shop is sourced from Christian merchants who share a
+            commitment to quality, integrity, and spreading God’s love. Thank you for
+            supporting a community of faith‑driven creators.
+        </p>
+    </section>
+
+    <!-- ═══ PRODUCT GRID ═══ -->
+    <section>
+        <h2 style="font-size:28px; color:#1a3c7a; text-align:center; margin-bottom:10px;">
+            🛍️ Featured Blessings
+        </h2>
+        <div class="products">
+
+            <!-- ─ Product Card 1 ─ -->
+            <div class="product-card" data-product="Cross Necklace">
+                <img src="https://via.placeholder.com/300x200/1a3c7a/ffffff?text=Cross+Necklace" alt="Cross Necklace" />
+                <h3>Cross Necklace</h3>
+                <div class="price">$24.99</div>
+                <div class="desc">Elegant silver cross pendant with chain.</div>
+                <button class="btn-buy" onclick="triggerUpsell('Cross Necklace', 24.99)">Buy Now</button>
+            </div>
+
+            <!-- ─ Product Card 2 ─ -->
+            <div class="product-card" data-product="Prayer Journal">
+                <img src="https://via.placeholder.com/300x200/1a3c7a/ffffff?text=Prayer+Journal" alt="Prayer Journal" />
+                <h3>Prayer Journal</h3>
+                <div class="price">$14.99</div>
+                <div class="desc">Leather‑bound journal for daily prayers and reflections.</div>
+                <button class="btn-buy" onclick="triggerUpsell('Prayer Journal', 14.99)">Buy Now</button>
+            </div>
+
+            <!-- ─ Product Card 3 ─ -->
+            <div class="product-card" data-product="Angel Figurine">
+                <img src="https://via.placeholder.com/300x200/1a3c7a/ffffff?text=Angel+Figurine" alt="Angel Figurine" />
+                <h3>Angel Figurine</h3>
+                <div class="price">$34.99</div>
+                <div class="desc">Handcrafted guardian angel statue for your home.</div>
+                <button class="btn-buy" onclick="triggerUpsell('Angel Figurine', 34.99)">Buy Now</button>
+            </div>
+
+            <!-- ─ Product Card 4 ─ -->
+            <div class="product-card" data-product="Scripture Cards">
+                <img src="https://via.placeholder.com/300x200/1a3c7a/ffffff?text=Scripture+Cards" alt="Scripture Cards" />
+                <h3>Scripture Cards</h3>
+                <div class="price">$9.99</div>
+                <div class="desc">Set of 50 memory verse cards with beautiful designs.</div>
+                <button class="btn-buy" onclick="triggerUpsell('Scripture Cards', 9.99)">Buy Now</button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ═══ UPSELL POPUP ═══ -->
+    <div class="upsell-overlay" id="upsellOverlay">
+        <div class="upsell-box">
+            <h2>🙌 You might also like…</h2>
+            <p>Add this blessed item to your order for just <strong>$9.99</strong> more!</p>
+            <div class="upsell-product">
+                <h4>🕊️ Holy Water Bottle</h4>
+                <div class="price">+$9.99</div>
+                <div style="font-size:14px; color:#4a6a8a; margin-top:6px;">Travel‑size anointed bottle</div>
+            </div>
+            <div class="upsell-actions">
+                <button class="btn-upsell-yes" onclick="acceptUpsell()">Yes, add it! ✅</button>
+                <button class="btn-upsell-no" onclick="declineUpsell()">No thanks</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ CHECKOUT (White & Blue Flow) ═══ -->
+    <section class="checkout" id="checkout">
+        <h2>💳 Complete Your Order</h2>
+        <form id="checkoutForm" onsubmit="event.preventDefault(); alert('🙏 Thank you! Your order has been placed. God bless you!');">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter your full name" required />
+
+            <label>Email Address</label>
+            <input type="email" placeholder="you@example.com" required />
+
+            <label>Shipping Address</label>
+            <input type="text" placeholder="Street, City, ZIP" required />
+
+            <div class="row">
+                <div>
+                    <label>Country</label>
+                    <select required>
+                        <option value="">Select</option>
+                        <option>United States</option>
+                        <option>Canada</option>
+                        <option>United Kingdom</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ZIP / Postal</label>
+                    <input type="text" placeholder="e.g. 90210" required />
+                </div>
+            </div>
+
+            <label>Card Number</label>
+            <input type="text" placeholder="1234 5678 9012 3456" required />
+
+            <div class="row">
+                <div>
+                    <label>Expiry</label>
+                    <input type="text" placeholder="MM/YY" required />
+                </div>
+                <div>
+                    <label>CVC</label>
+                    <input type="text" placeholder="123" required />
+                </div>
+            </div>
+
+            <button type="submit" class="btn-checkout">Place Order ✝️</button>
+            <div class="secure"><span>🔒</span> Secure checkout • 256‑bit encryption</div>
+        </form>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer>
+        &copy; 2026 <strong>Messenger Angel Helper</strong> &nbsp;•&nbsp; Built with faith &amp; love &nbsp;•&nbsp;
+        <a href="#">Privacy Policy</a>
+    </footer>
+
+</div>
+
+<!-- ═══ JAVASCRIPT (Upsell Logic & One‑Click Sign‑In) ═══ -->
+<script>
+    // ── Upsell State ──
+    let selectedProduct = '';
+    let selectedPrice = 0;
+    let upsellAccepted = false;
+
+    function triggerUpsell(product, price) {
+        selectedProduct = product;
+        selectedPrice = price;
+        upsellAccepted = false;
+        document.getElementById('upsellOverlay').classList.add('active');
+    }
+
+    function acceptUpsell() {
+        upsellAccepted = true;
+        document.getElementById('upsellOverlay').classList.remove('active');
+        alert('✨ Holy Water Bottle added to your cart! Total: $' + (selectedPrice + 9.99).toFixed(2));
+        // Scroll to checkout
+        document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function declineUpsell() {
+        document.getElementById('upsellOverlay').classList.remove('active');
+        alert('🛒 ' + selectedProduct + ' added to your cart. Total: $' + selectedPrice.toFixed(2));
+        // Scroll to checkout
+        document.getElementById('checkout').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ── One‑Click Sign‑In (Google) ──
+    // This is a placeholder – replace with actual Google OAuth client ID
+    function oneClickSignIn() {
+        alert('🔐 One‑Click Sign‑In with Google would trigger here.\n\n' +
+            'To set this up:\n' +
+            '1. Go to Google Cloud Console\n' +
+            '2. Create a new project\n' +
+            '3. Enable Google+ API\n' +
+            '4. Create OAuth 2.0 credentials\n' +
+            '5. Add your Client ID to this script');
+    }
+
+    // Add a sign‑in button to the header (optional)
+    // You can uncomment the line below if you want a sign‑in button:
+    // document.querySelector('.logo').innerHTML += ' <button onclick="oneClickSignIn()" style="margin-left:auto; background:#1a3c7a; color:#fff; border:none; padding:8px 18px; border-radius:30px; cursor:pointer;">Sign In</button>';
+</script>
+
+</body>
+</html>
